@@ -1,0 +1,7 @@
+[
+  {"name":"Eid gift intent","market":"UAE","occasion":"eid","budget_aed":130,"events":[{"type":"browse","product_id":"GS-002","text":"viewed date gift box"},{"type":"cart_add","product_id":"GS-004","text":"added calligraphy mug"}],"language":"English"},
+  {"name":"Anniversary photo interest","market":"UK","occasion":"anniversary","budget_aed":160,"events":[{"type":"photo_upload","product_id":"GS-001","text":"uploaded a photo"},{"type":"browse","product_id":"GS-003","text":"viewed star map print"}],"language":"English"},
+  {"name":"UAE National Day","market":"UAE","occasion":"national_day","budget_aed":110,"events":[{"type":"browse","product_id":"GS-006","text":"viewed keepsake box"}],"language":"Arabic"},
+  {"name":"Budget mismatch test","market":"US","occasion":"birthday","budget_aed":50,"events":[{"type":"cart_add","product_id":"GS-003","text":"added star map print"}],"language":"English"},
+  {"name":"New job practical gift","market":"UAE","occasion":"new_job","budget_aed":90,"events":[{"type":"browse","product_id":"GS-008","text":"viewed desk plant set"}],"language":"English"}
+]
