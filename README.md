@@ -1,99 +1,165 @@
-# GiftSense — Agentic Gift Personalisation Demo
 
-**A portfolio demo inspired by a public job description; not affiliated with Printerpix or any other retailer.**
+# GiftSense — AI Gift Personalisation Demo
 
-All customer events, catalogue entries, and campaign metrics are synthetic. No real customer data is collected and no messages are sent.
+**Live demo:** https://gift-sense-utxmcd2c7s8zctcdxsmhbw.streamlit.app/
 
-## What it demonstrates
+**Repository:** https://github.com/MohdSiddiq12/Gift-Sense
 
-- LangGraph workflow with signal interpretation, catalogue retrieval, recommendation/critique, and message composition.
-- Four tool capabilities: synthetic customer-event summarisation, catalogue search, SQLite campaign metrics, and local run logging.
-- An MCP server exposing those tools over stdio.
-- Market, occasion, and budget filters; catalogue-grounded product claims; human approval state.
-- Streamlit interface with editable scenarios and visible execution trace.
-- Starter evaluation tests for constraints, no-match handling, and draft-only behaviour.
+GiftSense is a portfolio project demonstrating an agentic workflow for personalised gift recommendations. It combines LangGraph orchestration, catalogue retrieval, recommendation guardrails, multilingual message drafting, and an interactive Streamlit interface.
 
-## Run locally
+This is an independent portfolio demo inspired by a public job description. It is not affiliated with Printerpix or any other retailer.
 
-Requires Python 3.11+.
+All customer events, products, and campaign metrics are synthetic. The application does not contact customers or send messages.
 
-```bash
-python -m venv .venv
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
-$env:PYTHONPATH = "src"  # Windows PowerShell
-# export PYTHONPATH=src  # macOS/Linux
-streamlit run app/streamlit_app.py
-```
+## Features
 
-## Run the MCP server
-
-In a separate terminal with the virtual environment activated:
-
-```bash
-# Windows PowerShell
-$env:PYTHONPATH = "src"
-python -m giftsense.mcp_server
-
-# macOS/Linux
-PYTHONPATH=src python -m giftsense.mcp_server
-```
-
-The server uses stdio, so it is intended to be launched by an MCP-compatible client. It does not open a public network port.
-
-## Run tests
-
-```bash
-pip install pytest
-$env:PYTHONPATH = "src"
-pytest -q
-```
+- **Agent workflow:** LangGraph pipeline for signal interpretation, retrieval, recommendation, and message composition.
+- **Catalogue retrieval:** Hard filters for market, occasion, and budget, followed by TF-IDF text ranking.
+- **Recommendation guardrails:** Product recommendations are restricted to eligible catalogue items.
+- **Multilingual drafting:** English and Arabic message drafts generated using templates.
+- **Human approval:** UI-only approval state; no external action is triggered.
+- **MCP tools:** Separate stdio MCP server exposing customer-event summarisation, catalogue search, campaign metrics, and local run logging.
+- **Evaluation:** Automated tests for recommendation constraints, no-match behaviour, draft-only safety, and retrieval ranking.
+- **Observability:** Execution trace and synthetic campaign metrics displayed in the interface.
 
 ## Architecture
 
 ```mermaid
-flowchart LR
-    A[Editable synthetic events] --> B[Signal interpreter]
-    B --> C[Catalogue retrieval]
-    C --> D[Recommendation + critic]
-    D --> E[English / Arabic draft]
-    E --> F{Human approval}
-    F -->|Approved in demo| G[Local simulated state]
-    F -->|Not approved| H[No action]
-    I[MCP tools] --- B
-    I --- C
-    I --- J[SQLite metrics]
-    I --- K[Local run log]
+flowchart TD
+    A[Streamlit inputs] --> B[LangGraph workflow]
+    B --> C[Interpret customer signals]
+    C --> D[Filter catalogue by constraints]
+    D --> E[TF-IDF retrieval ranking]
+    E --> F[Recommend eligible product]
+    F --> G[Validate recommendation]
+    G --> H[Compose English or Arabic draft]
+    H --> I[Human approval simulation]
+    I --> J[No external message sent]
+    K[MCP stdio server] --> L[Catalogue and event tools]
+    K --> M[SQLite campaign metrics]
 ```
 
-## Current limitations / honest scope
+## Technology stack
 
-- Retrieval is deterministic metadata filtering plus lightweight text matching, not production vector RAG yet.
-- Message composition uses templates; no external LLM call is made.
-- The approval checkbox is a UI-only simulation and does not trigger a real campaign.
-- The supplied tests are a starter suite, not the final 30–50-case evaluation plan.
-- Cost and latency are not yet instrumented as production observability metrics.
+- Python
+- Streamlit
+- LangGraph
+- Model Context Protocol (MCP)
+- scikit-learn TF-IDF and cosine similarity
+- Pandas
+- SQLite
+- Pytest
 
-## Next build stages
+## Run locally
 
-1. Add a 30–50 scenario evaluation harness and export a results table.
-2. Add embeddings + Chroma retrieval and compare it with the deterministic baseline.
-3. Optionally add an LLM composer behind an environment variable, retaining deterministic fallback and catalogue validation.
-4. Instrument latency, token usage, and failure categories.
-5. Add Docker packaging, deployment, screenshots, and a 90-second demo script.
+Requires Python 3.12 or a compatible Python version supported by the dependencies.
 
-## Evaluation dimensions
+### 1. Clone the repository
 
-| Dimension | Expected behaviour |
+```bash
+git clone https://github.com/MohdSiddiq12/Gift-Sense.git
+cd Gift-Sense
+```
+
+### 2. Create and activate a virtual environment
+
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+macOS/Linux:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+pip install pytest
+```
+
+### 4. Start the application
+
+Windows PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src"
+streamlit run app/streamlit_app.py
+```
+
+macOS/Linux:
+
+```bash
+PYTHONPATH=src streamlit run app/streamlit_app.py
+```
+
+## Run tests
+
+Windows PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m pytest -q
+```
+
+macOS/Linux:
+
+```bash
+PYTHONPATH=src python -m pytest -q
+```
+
+## Run the MCP server
+
+The MCP server uses stdio and is intended to be launched by an MCP-compatible client.
+
+Windows PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m giftsense.mcp_server
+```
+
+macOS/Linux:
+
+```bash
+PYTHONPATH=src python -m giftsense.mcp_server
+```
+
+## Evaluation criteria
+
+| Criterion | Expected behaviour |
 |---|---|
-| Price compliance | Recommended product price is at or below the budget |
-| Market compliance | Product is available in the selected synthetic market |
-| Occasion relevance | Product metadata includes the selected occasion |
-| Grounded claims | Message uses only catalogue-backed facts |
-| No-match safety | No product is fabricated if no catalogue item passes filters |
-| Approval safety | The app never sends a message externally |
+| Budget compliance | Recommended product stays within budget |
+| Market compliance | Product is available in the selected market |
+| Occasion relevance | Product supports the selected occasion |
+| Retrieval relevance | Text ranking prioritises relevant eligible products |
+| No-match handling | No product is fabricated when no eligible item exists |
+| Grounded descriptions | Product claims come from catalogue data |
+| Approval safety | Approval remains simulated; no message is sent |
+
+## Limitations
+
+- TF-IDF retrieval is a lightweight lexical baseline, not embedding-based semantic retrieval.
+- Message composition uses deterministic templates; no live LLM is called.
+- Human approval is simulated in the interface.
+- Catalogue and campaign data are synthetic.
+- The automated test suite is a starter suite, not exhaustive production validation.
+- Production authentication, persistent hosted storage, and production monitoring are outside the current scope.
+
+## Potential next improvements
+
+1. Expand automated evaluation across more markets, occasions, and budget boundaries.
+2. Compare TF-IDF retrieval against embedding-based retrieval.
+3. Add an optional LLM composer with deterministic fallback and catalogue-grounding checks.
+4. Measure latency, retrieval quality, and failure rates.
+5. Add CI checks and containerised deployment.
 
 ## Privacy and branding
 
-Synthetic data only. No scraping, no customer tracking, no brand assets, and no affiliation implied.
+GiftSense uses synthetic demonstration data and does not imply an affiliation with any retailer.
